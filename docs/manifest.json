@@ -1,0 +1,20 @@
+{
+  "id": "verb-starter-checker",
+  "name": "Verb-Starter Checker",
+  "description": "Warn if a card title doesn’t start with a verb",
+  "author": "Your Name",
+  "version": "0.0.1",
+  "icons": {
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "capabilities": {
+    "card-badges": { "callback": "cardBadges" },
+    "card-composer": { "callback": "cardComposer" }
+  },
+  "connectors": [],
+  "authorizations": {
+    "use": [{ "type": "read", "scope": "card" }]
+  }
+}
+
