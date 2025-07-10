@@ -1,19 +1,20 @@
-// your original verbs list (can stay mixed-case)
+// your original verbs list
 const verbs = ["Add","Assign","Close","Create","Fix","Review","Update","Write"];
-
-// build a Set of lowercase verbs for fast, case-insensitive lookup
+// lowercase set for fast lookup
 const verbSet = new Set(verbs.map(v => v.toLowerCase()));
 
 window.TrelloPowerUp.initialize({
 
-  // Card badges on the front of the card
+  // front-of-card badge (unchanged)
   "card-badges": t =>
     t.card('name')
      .then(({ name }) => {
-       const firstWord = (name || "").trim().split(' ')[0].toLowerCase();
-       if (firstWord && !verbSet.has(firstWord)) {
+       const title = (name || "").toLowerCase();
+       // check if any verb appears anywhere
+       const hasVerb = Array.from(verbSet).some(verb => title.includes(verb));
+       if (title && !hasVerb) {
          return [{
-           text: "❗ Title not a verb",
+           text: "❗ No verb found",
            color: "red",
            refresh: 10
          }];
@@ -21,14 +22,15 @@ window.TrelloPowerUp.initialize({
        return [];
      }),
 
-  // Popup in the composer before you save the card
+  // composer popup: runs before the card is created
   "card-composer": (t, opts) => {
-    const firstWord = (opts.name || "").trim().split(' ')[0].toLowerCase();
-    if (opts.name && !verbSet.has(firstWord)) {
+    const title = (opts.name || "").toLowerCase();
+    const hasVerb = Array.from(verbSet).some(verb => title.includes(verb));
+    if (title && !hasVerb) {
       return t.popup({
-        title: "Heads up!",
+        title: "⚠️ Heads up",
         url: './composer-warning.html',
-        height: 80
+        height: 100
       });
     }
     return [];
