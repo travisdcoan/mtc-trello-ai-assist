@@ -2,7 +2,7 @@
   "id": "verb-starter-checker",
   "name": "Verb-Starter Checker",
   "description": "Warn if a card title doesn’t start with a verb",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "icons": { "48": "icon-48.png" },
   "capabilities": {
     "card-back-section": { "callback": "cardBackSection" }
