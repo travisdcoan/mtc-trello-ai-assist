@@ -23,6 +23,20 @@ window.TrelloPowerUp.initialize(
       return [];
     },
 
+      "board-buttons": function(t) {
+    return [{
+      icon: { url: 'https://trello.com/favicon.ico', size: 16 },
+      text: 'Check Verbs',
+      callback: function(t) {
+        return t.popup({
+          title: 'Verb Checker',
+          url:   'https://…/board-popup.html',
+          height: 200
+        });
+      }
+    }];
+  },
+
     // 2. Detail badge on the back of the card (clickable → popup)
     "card-detail-badges": async function(t) {
       const { id, name } = await t.card("id", "name");
