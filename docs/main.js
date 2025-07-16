@@ -36,32 +36,34 @@ window.TrelloPowerUp.initialize({
     return [];
   },
   "card-buttons": function(t, opts) {
-      console.log('[VerbChecker] card-buttons called', opts);
-      return [{
-        icon: { url: 'https://trello.com/favicon.ico', size: 16 },
-        text: 'Check Verb',
-        callback: function(t) {
-          console.log('[VerbChecker] button clicked');
-          return t.card('name')
-          .then(({name}) => {
-            console.log('[VerbChecker] card name is', name);
-            const title = (name||'').toLowerCase();
-            const hasVerb = Array.from(verbSet).some(v => title.includes(v));
-            if (!hasVerb) {
-              console.log('[VerbChecker] no verb → showing popup');
+    return [{
+      icon: { url: 'https://trello.com/favicon.ico', size: 16 },
+      text: 'Check Verb',
+      callback: function(t) {
+        return t
+          .card('name')
+          .then(({ name }) => {
+            // grab and normalize the first word
+            const first = (name || "")
+              .trim()
+              .split(/\s+/)[0]
+              .toLowerCase();
+
+            // if it’s not in our verbSet, fire the popup
+            if (!verbSet.has(first)) {
               return t.popup({
                 title: '⚠️ Missing Verb',
-                url: 'https://travisdcoan.github.io/mtc-trello-ai-assist/composer-warning.html',
-                height: 100
+                // use the absolute URL to your hosted HTML
+                url: 'https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html',
+                height: 120
               });
-            } else {
-              console.log('[VerbChecker] verb found → closing popup');
-              return t.popup({ title: '✅ OK', url: '', height: 60 })
-                      .then(() => t.close());
             }
+
+            // otherwise just close (no warning)
+            return t.close();
           });
-        }
-      }];
-    }
+      }
+    }];
+  }
 });
 
