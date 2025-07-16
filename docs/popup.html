@@ -6,23 +6,14 @@
   <style>
     body { font-family: sans-serif; padding: 12px; }
     #suggestions button {
-      display: block;
-      margin: 6px 0;
-      padding: 6px 12px;
-      font-size: 14px;
-      cursor: pointer;
-      border: 1px solid #888;
-      border-radius: 4px;
-      background: #f4f4f4;
-      text-align: left;
+      display: block; margin: 6px 0; padding: 6px 12px;
+      font-size: 14px; cursor: pointer;
+      border: 1px solid #888; border-radius: 4px;
+      background: #f4f4f4; text-align: left;
     }
     #cancel-btn {
-      margin-top: 10px;
-      background: none;
-      border: none;
-      color: #555;
-      text-decoration: underline;
-      cursor: pointer;
+      margin-top: 10px; background: none; border: none;
+      color: #555; text-decoration: underline; cursor: pointer;
       font-size: 13px;
     }
   </style>
@@ -34,45 +25,59 @@
 
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script>
-    // Initialize the iframe client
+    // 1) Initialize the iframe client with your key/app info
     const t = window.TrelloPowerUp.iframe({
       appKey:    "2d28f67731b868888a2fc22bdd3295af",
       appName:   "Verb-Starter Checker",
       appAuthor: "MTC"
     });
 
-    // Wait until Trello has passed in the args
     t.render(async () => {
-      // Pull them out by key
+      // 2) Grab the passed-in card id & name
       const cardId   = t.arg('id');
       const cardName = t.arg('name') || "";
 
-      // 1. Update the message
+      // 3) Show the prompt
       document.getElementById('message').textContent =
         `Would you like to title it “Fix ${cardName}”?`;
 
-      // 2. Offer multiple suggestions
+      // 4) Prepare verbs list & build suggestion buttons
       const verbs = ["Add","Assign","Close","Create","Fix","Review","Update","Write"];
       const container = document.getElementById('suggestions');
 
+      // 5) Fetch the member token once
+      const client = t.getRestApi();
+      if (!(await client.isAuthorized())) {
+        await client.authorize({
+          scope:          { read: true, write: true },
+          expiration:     'never',
+          callbackMethod: 'postMessage'
+        });
+      }
+      const token = await client.getToken();
+
+      // 6) Wire each suggestion to a fetch() call
       for (let verb of verbs) {
         const btn = document.createElement('button');
-        btn.textContent = `${verb} ${cardName}`;
+        const newName = `${verb} ${cardName}`;
+        btn.textContent = newName;
         btn.addEventListener('click', async () => {
-          const api = await t.getRestApi();
-          // 1) ensure write permission
-          if (!await api.isAuthorized()) {
-            await api.authorize({ scope: "read,write" });
-          }
-          // 2) rename the card
-          await api.put(`/cards/${cardId}`, { name: `${verb} ${cardName}` });
-          // 3) close the popup
+          // PUT request to Trello’s API
+          await fetch(
+            `https://api.trello.com/1/cards/${cardId}?key=${t.appKey}&token=${token}`,
+            {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: newName })
+            }
+          );
+          // close popup when done
           t.close();
         });
         container.appendChild(btn);
       }
 
-      // 3. Cancel just closes
+      // 7) Cancel just closes
       document.getElementById('cancel-btn')
         .addEventListener('click', () => t.close());
     });
