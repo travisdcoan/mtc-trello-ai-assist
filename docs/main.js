@@ -11,7 +11,7 @@ window.TrelloPowerUp.initialize({
                         .toLowerCase();
         if (!verbSet.has(first)) {
           return [{
-            title: '⚠️ Missing Verb',
+            title: 'Missing Verb',
             icon: {
               // switch to Trello’s own favicon for testing
               url: 'https://trello.com/favicon.ico'
