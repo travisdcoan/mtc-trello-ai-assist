@@ -1,3 +1,4 @@
+<!-- docs/popup.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,60 +6,45 @@
   <style>
     body { font-family: sans-serif; padding: 12px; }
     #suggestions button {
-      display: block;
-      margin: 6px 0;
-      padding: 6px 12px;
-      font-size: 14px;
-      cursor: pointer;
-      border: 1px solid #888;
-      border-radius: 4px;
-      background: #f4f4f4;
-      text-align: left;
+      display: block; margin: 6px 0; padding: 6px 12px;
+      font-size: 14px; cursor: pointer;
+      border: 1px solid #888; border-radius: 4px;
+      background: #3a294f; text-align: left;
     }
     #cancel-btn {
-      margin-top: 10px;
-      background: none;
-      border: none;
-      color: #555;
-      text-decoration: underline;
-      cursor: pointer;
+      margin-top: 10px; background: none; border: none;
+      color: #555; text-decoration: underline; cursor: pointer;
       font-size: 13px;
     }
   </style>
 </head>
 <body>
-  <!-- Make sure these IDs match exactly what your script expects -->
   <p id="message"></p>
   <div id="suggestions"></div>
   <button id="cancel-btn">Not now</button>
 
-  <!-- Load Trello client -->
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script>
     const APP_KEY = "2d28f67731b868888a2fc22bdd3295af";
-    const t = window.TrelloPowerUp.iframe();
+    // **Pass appKey & appName here!**
+    const t = window.TrelloPowerUp.iframe({
+      appKey:    APP_KEY,
+      appName:   "Verb-Starter Checker",
+      appAuthor: "Trav Coan"
+    });
 
-    // Wait for the Trello handshake and DOM to be ready
     t.render(async () => {
       try {
-        // DEBUG: verify elements exist
-        if (!document.getElementById('message') || !document.getElementById('suggestions')) {
-          throw new Error("Missing #message or #suggestions element");
-        }
-
-        // 1) Pull in args
         const cardId   = t.arg('id');
         const cardName = t.arg('name');
-        console.log("[Popup] args:", { cardId, cardName });
         if (!cardId || !cardName) {
-          throw new Error("Popup didn’t receive id/name");
+          throw new Error("Missing card id or name");
         }
 
-        // 2) Show the prompt
         document.getElementById('message').textContent =
           `Would you like to title it “Fix ${cardName}”?`;
 
-        // 3) Authorize & get token
+        // Authorize & get token
         const client = t.getRestApi();
         if (!(await client.isAuthorized())) {
           await client.authorize({
@@ -69,20 +55,17 @@
         }
         const token = await client.getToken();
 
-        // 4) Build suggestion buttons
+        // Build buttons
         const verbs = ["Add","Assign","Close","Create","Fix","Review","Update","Write"];
         const container = document.getElementById('suggestions');
-        container.innerHTML = ""; // clear
-
+        container.innerHTML = "";
         verbs.forEach(verb => {
           const newName = `${verb} ${cardName}`;
           const btn     = document.createElement('button');
           btn.textContent = newName;
           btn.addEventListener('click', async () => {
-            // Rename via fetch
             await fetch(
-              `https://api.trello.com/1/cards/${cardId}` +
-              `?key=${APP_KEY}&token=${token}`,
+              `https://api.trello.com/1/cards/${cardId}?key=${APP_KEY}&token=${token}`,
               {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -94,15 +77,14 @@
           container.appendChild(btn);
         });
 
-        // 5) Cancel button
+        // Cancel
         document.getElementById('cancel-btn')
           .addEventListener('click', () => t.closePopup());
 
       } catch (err) {
         console.error("[Popup] render error:", err);
         document.body.innerHTML = 
-          "<p style='color:red'>Error loading suggestions:<br>"
-          + err.message + "</p>";
+          `<p style='color:red'>Error loading suggestions:<br>${err.message}</p>`;
       }
     });
   </script>
