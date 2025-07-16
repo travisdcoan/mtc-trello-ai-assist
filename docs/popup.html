@@ -25,27 +25,18 @@
 
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script>
-    // 1) Initialize the iframe client with your key/app info
-    const t = window.TrelloPowerUp.iframe({
-      appKey:    "2d28f67731b868888a2fc22bdd3295af",
-      appName:   "Verb-Starter Checker",
-      appAuthor: "MTC"
-    });
+    const APP_KEY = "2d28f67731b868888a2fc22bdd3295af";
+    // initialize the client
+    const t = window.TrelloPowerUp.iframe();
 
     t.render(async () => {
-      // 2) Grab the passed-in card id & name
       const cardId   = t.arg('id');
       const cardName = t.arg('name') || "";
 
-      // 3) Show the prompt
       document.getElementById('message').textContent =
         `Would you like to title it “Fix ${cardName}”?`;
 
-      // 4) Prepare verbs list & build suggestion buttons
-      const verbs = ["Add","Assign","Close","Create","Fix","Review","Update","Write"];
-      const container = document.getElementById('suggestions');
-
-      // 5) Fetch the member token once
+      // authorize & grab token
       const client = t.getRestApi();
       if (!(await client.isAuthorized())) {
         await client.authorize({
@@ -56,30 +47,32 @@
       }
       const token = await client.getToken();
 
-      // 6) Wire each suggestion to a fetch() call
+      // build suggestion buttons
+      const verbs = ["Add","Assign","Close","Create","Fix","Review","Update","Write"];
+      const container = document.getElementById('suggestions');
       for (let verb of verbs) {
-        const btn = document.createElement('button');
         const newName = `${verb} ${cardName}`;
+        const btn = document.createElement('button');
         btn.textContent = newName;
         btn.addEventListener('click', async () => {
-          // PUT request to Trello’s API
           await fetch(
-            `https://api.trello.com/1/cards/${cardId}?key=${t.appKey}&token=${token}`,
+            `https://api.trello.com/1/cards/${cardId}` +
+            `?key=${APP_KEY}&token=${token}`,
             {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ name: newName })
             }
           );
-          // close popup when done
-          t.close();
+          // **close the popup**:
+          t.closePopup();
         });
         container.appendChild(btn);
       }
 
-      // 7) Cancel just closes
+      // cancel just closes the popup too
       document.getElementById('cancel-btn')
-        .addEventListener('click', () => t.close());
+        .addEventListener('click', () => t.closePopup());
     });
   </script>
 </body>
