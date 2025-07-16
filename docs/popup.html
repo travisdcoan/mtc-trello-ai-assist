@@ -1,61 +1,81 @@
+<!-- docs/popup.html -->
 <!DOCTYPE html>
-<html><head><meta charset="utf-8">
+<html>
+<head>
+  <meta charset="utf-8">
   <style>
     body { font-family: sans-serif; padding: 12px; }
     #suggestions button {
-      display: block; margin: 6px 0; padding: 6px 12px;
-      font-size: 14px; cursor: pointer;
-      border: 1px solid #888; border-radius: 4px;
-      background: #405038; text-align: left;
+      display: block;
+      margin: 6px 0;
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid #888;
+      border-radius: 4px;
+      background: #f4f4f4;
+      text-align: left;
     }
     #cancel-btn {
-      margin-top:10px; background:none; border:none;
-      color:#555; text-decoration:underline; cursor:pointer;
-      font-size:13px;
+      margin-top: 10px;
+      background: none;
+      border: none;
+      color: #555;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 13px;
     }
   </style>
-</head><body>
+</head>
+<body>
   <p id="message"></p>
   <div id="suggestions"></div>
   <button id="cancel-btn">Not now</button>
 
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script>
-    // initialize the client with your key/app info so getRestApi() works :contentReference[oaicite:0]{index=0}
+    // Initialize the iframe client
     const t = window.TrelloPowerUp.iframe({
       appKey:    "2d28f67731b868888a2fc22bdd3295af",
       appName:   "Verb-Starter Checker",
       appAuthor: "MTC"
     });
 
+    // Wait until Trello has passed in the args
     t.render(async () => {
-      const { id, name } = t.arg();        // retrieve passed-in args
-      document.getElementById('message').textContent =
-        `Would you like to title it “Fix ${name}”?`;
+      // Pull them out by key
+      const cardId   = t.arg('id');
+      const cardName = t.arg('name') || "";
 
+      // 1. Update the message
+      document.getElementById('message').textContent =
+        `Would you like to title it “Fix ${cardName}”?`;
+
+      // 2. Offer multiple suggestions
       const verbs = ["Add","Assign","Close","Create","Fix","Review","Update","Write"];
       const container = document.getElementById('suggestions');
 
       for (let verb of verbs) {
         const btn = document.createElement('button');
-        btn.textContent = `${verb} ${name}`;
+        btn.textContent = `${verb} ${cardName}`;
         btn.addEventListener('click', async () => {
           const api = await t.getRestApi();
-          // 1. ensure we’re authorized for write
-          const isAuth = await api.isAuthorized();
-          if (!isAuth) {
+          // 1) ensure write permission
+          if (!await api.isAuthorized()) {
             await api.authorize({ scope: "read,write" });
           }
-          // 2. rename the card via Trello's REST API
-          await api.put(`/cards/${id}`, { name: `${verb} ${name}` });
-          // 3. close the popup when done
+          // 2) rename the card
+          await api.put(`/cards/${cardId}`, { name: `${verb} ${cardName}` });
+          // 3) close the popup
           t.close();
         });
         container.appendChild(btn);
       }
 
-      // cancel just closes
-      document.getElementById('cancel-btn').addEventListener('click', () => t.close());
+      // 3. Cancel just closes
+      document.getElementById('cancel-btn')
+        .addEventListener('click', () => t.close());
     });
   </script>
-</body></html>
+</body>
+</html>
