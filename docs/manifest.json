@@ -10,7 +10,9 @@
   },
   "capabilities": {
     "card-badges": { "callback": "cardBadges" },
-    "card-composer": { "callback": "cardComposer" }
+    "card-composer": { "callback": "cardComposer" },
+    "card-buttons": { "callback": "cardButtons" },
+    "card-back-section": { "callback": "cardBackSection" }
   },
   "connectors": [],
   "authorizations": {
