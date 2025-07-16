@@ -29,44 +29,39 @@ window.TrelloPowerUp.initialize({
     if (title && !hasVerb) {
       return t.popup({
         title: "⚠️ Heads up",
-        url: './composer-warning.html',
+        url: 'https://travisdcoan.github.io/mtc-trello-ai-assist/composer-warning.html',
         height: 100
       });
     }
     return [];
   },
-    "card-buttons": function(t, opts){
-    return [{
-      // icon can be any 16×16 image URL
-      icon: {
-        url: 'https://trello.com/favicon.ico',
-        size: 16
-      },
-      text: 'Check Verb',
-      callback: function(t){
-        // fetch the card name
-        return t.card('name')
-          .then(({ name }) => {
+  "card-buttons": function(t, opts) {
+      console.log('[VerbChecker] card-buttons called', opts);
+      return [{
+        icon: { url: 'https://trello.com/favicon.ico', size: 16 },
+        text: 'Check Verb',
+        callback: function(t) {
+          console.log('[VerbChecker] button clicked');
+          return t.card('name')
+          .then(({name}) => {
+            console.log('[VerbChecker] card name is', name);
             const title = (name||'').toLowerCase();
             const hasVerb = Array.from(verbSet).some(v => title.includes(v));
             if (!hasVerb) {
-              // show your warning popup
+              console.log('[VerbChecker] no verb → showing popup');
               return t.popup({
                 title: '⚠️ Missing Verb',
-                url: './composer-warning.html',
+                url: 'https://travisdcoan.github.io/mtc-trello-ai-assist/composer-warning.html',
                 height: 100
               });
             } else {
-              // optional “all good” notification
-              return t.popup({
-                title: '✅ Looks good!',
-                url: './okay.html',  // create a simple okay.html or just replace with t.close()
-                height: 60
-              });
+              console.log('[VerbChecker] verb found → closing popup');
+              return t.popup({ title: '✅ OK', url: '', height: 60 })
+                      .then(() => t.close());
             }
           });
-      }
-    }];
-  }
+        }
+      }];
+    }
 });
 
