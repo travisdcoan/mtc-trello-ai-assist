@@ -5,13 +5,17 @@ const verbSet = new Set(verbs.map(v => v.toLowerCase()));
 
 window.TrelloPowerUp.initialize(
   {
-    // Front‐of‐card badge in list view (optional)
-    "card-badges": async t => {
+    // 1. Front-of-card badge in list view
+    "card-badges": async function(t) {
       const { name } = await t.card("name");
-      const first = (name||"").trim().split(/\s+/)[0].toLowerCase();
+      const first = (name || "")
+        .trim()
+        .split(/\s+/)[0]
+        .toLowerCase();
       if (!verbSet.has(first)) {
+        const msg = `It looks like your card “${name}” isn’t starting with a verb.`;
         return [{
-          text:  `It looks like your card “${name}” isn’t starting with a verb.`,
+          text:  msg,
           color: "red",
           refresh: 30
         }];
@@ -19,45 +23,36 @@ window.TrelloPowerUp.initialize(
       return [];
     },
 
-    // 2. Inject an inline section *and* immediately popup on open
-    "card-back-section": async function(t) {
+    // 2. Detail badge on the back of the card (clickable → popup)
+    "card-detail-badges": async function(t) {
       const { id, name } = await t.card("id", "name");
-      const first = (name||"").trim().split(/\s+/)[0].toLowerCase();
-
+      const first = (name || "")
+        .trim()
+        .split(/\s+/)[0]
+        .toLowerCase();
       if (!verbSet.has(first)) {
-        // 1) Show the inline section
-        const section = [{
-          title: "Rename Suggestions",
-          icon: {
-            url:  "https://trello.com/favicon.ico",
-            size: 16
-          },
-          content: {
-            type:   "iframe",
-            url:    "https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html",
-            args:   { id, name },
-            height: 240
+        const msg = `It looks like your card “${name}” isn’t starting with a verb.`;
+        return [{
+          title: "Missing Verb",
+          text:  msg,
+          color: "red",
+          callback: async function(t) {
+            return t.popup({
+              title: "Rename Suggestion",
+              url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html",
+              args:  { id, name },
+              height: 240
+            });
           }
         }];
-
-        // 2) Fire the popup immediately on card‐open
-        await t.popup({
-          title: "Rename Suggestion",
-          url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html",
-          args:  { id, name },
-          height: 240
-        });
-
-        return section;
       }
-
       return [];
     }
   },
   {
-    // REST helper config
+    // ← This is the second argument to initialize()
     appKey:    "2d28f67731b868888a2fc22bdd3295af",
     appName:   "Verb-Starter Checker",
-    appAuthor: "Trav Coan"
+    appAuthor: "MTC"
   }
 );
