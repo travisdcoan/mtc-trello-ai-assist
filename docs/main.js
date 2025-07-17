@@ -21,18 +21,24 @@ window.TrelloPowerUp.initialize(
     },
 
     // 2. On card open: immediately show the popup if missing a verb
-    "card-back-section": async function(t, opts) {
-      const { id, name } = await t.card("id", "name");
+    "card-back-section": async function(t) {
+      const { id, name } = await t.card("id","name");
       const first = (name||"").trim().split(/\s+/)[0].toLowerCase();
+
       if (!verbSet.has(first)) {
-        await t.popup({
-          title: "Rename Suggestion",
-          url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html",
-          args:  { id, name },
-          height: 240
-        });
+        return [{
+          title: "Rename Suggestions",
+          icon: {
+            url: "https://travisdcoan.github.io/mtc-trello-ai-assist/icon-48.png"
+          },
+          content: {
+            type: "iframe",
+            url:  "https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html",
+            args: { id, name },
+            height: 240
+          }
+        }];
       }
-      // return an empty array so no inline section is rendered
       return [];
     }
   },
