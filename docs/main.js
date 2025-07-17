@@ -5,13 +5,10 @@ const verbSet = new Set(verbs.map(v => v.toLowerCase()));
 
 window.TrelloPowerUp.initialize(
   {
-    // 1. Front-of-card badge in list view
+    // 1. Front-of-card badge in list view (optional)
     "card-badges": async function(t) {
       const { name } = await t.card("name");
-      const first = (name || "")
-        .trim()
-        .split(/\s+/)[0]
-        .toLowerCase();
+      const first = (name||"").trim().split(/\s+/)[0].toLowerCase();
       if (!verbSet.has(first)) {
         const msg = `It looks like your card “${name}” isn’t starting with a verb.`;
         return [{
@@ -23,36 +20,26 @@ window.TrelloPowerUp.initialize(
       return [];
     },
 
-    // 2. Detail badge on the back of the card (clickable → popup)
-    "card-detail-badges": async function(t) {
+    // 2. On card open: immediately show the popup if missing a verb
+    "card-back-section": async function(t, opts) {
       const { id, name } = await t.card("id", "name");
-      const first = (name || "")
-        .trim()
-        .split(/\s+/)[0]
-        .toLowerCase();
+      const first = (name||"").trim().split(/\s+/)[0].toLowerCase();
       if (!verbSet.has(first)) {
-        const msg = `It looks like your card “${name}” isn’t starting with a verb.`;
-        return [{
-          title: "Missing Verb",
-          text:  msg,
-          color: "red",
-          callback: async function(t) {
-            return t.popup({
-              title: "Rename Suggestion",
-              url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html",
-              args:  { id, name },
-              height: 240
-            });
-          }
-        }];
+        await t.popup({
+          title: "Rename Suggestion",
+          url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html",
+          args:  { id, name },
+          height: 240
+        });
       }
+      // return an empty array so no inline section is rendered
       return [];
     }
   },
   {
-    // ← This is the second argument to initialize()
+    // REST helper config for your popup iframe
     appKey:    "2d28f67731b868888a2fc22bdd3295af",
     appName:   "Verb-Starter Checker",
-    appAuthor: "MTC"
+    appAuthor: "Trav Coan"
   }
 );
