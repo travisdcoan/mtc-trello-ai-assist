@@ -1,19 +1,46 @@
+<!-- docs/done-popup.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <style>
-    body { font-family: sans-serif; padding: 12px; }
-    label { display: flex; align-items: center; margin-bottom: 12px; }
-    label input { margin-right: 8px; }
-    select, button { width: 100%; margin-top: 8px; padding: 8px; }
-    #cancel-btn { background: none; border: none; color: #555; text-decoration: underline; margin-top: 12px; }
+    body {
+      font-family: sans-serif;
+      padding: 12px;
+    }
+    h3 {
+      margin-top: 0;
+    }
+    label {
+      display: block;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+    label input {
+      margin-right: 8px;
+    }
+    select, button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    #cancel-btn {
+      background: none;
+      border: none;
+      color: #555;
+      text-decoration: underline;
+      font-size: 13px;
+      margin-top: 12px;
+    }
   </style>
 </head>
 <body>
   <h3>Done Workflow</h3>
+
   <label>
-    <input type="checkbox" id="move-checkbox"/>
+    <input type="checkbox" id="move-checkbox" />
     Move card to DONE list
   </label>
 
@@ -31,49 +58,76 @@
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script>
     const APP_KEY = "2d28f67731b868888a2fc22bdd3295af";
-    const t = window.TrelloPowerUp.iframe({ appKey: APP_KEY, appName: "Verb-Starter Checker", appAuthor: "Trav Coan" });
+
+    // Initialize the Power-Up iframe client
+    const t = window.TrelloPowerUp.iframe({
+      appKey:    APP_KEY,
+      appName:   "Verb-Starter Checker",
+      appAuthor: "Trav Coan"
+    });
 
     t.render(async () => {
-      const { cardId, boardId } = t.arg();
-      const moveCb  = document.getElementById('move-checkbox');
-      const stepsEl = document.getElementById('next-steps');
-      const confirm = document.getElementById('confirm-btn');
-      const cancel  = document.getElementById('cancel-btn');
+      try {
+        // Retrieve passed-in arguments
+        const { cardId, boardId } = t.arg();
+        const moveCb  = document.getElementById('move-checkbox');
+        const stepsEl = document.getElementById('next-steps');
+        const confirm = document.getElementById('confirm-btn');
+        const cancel  = document.getElementById('cancel-btn');
 
-      // authorize & get token
-      const client = t.getRestApi();
-      if (!(await client.isAuthorized())) {
-        await client.authorize({ scope:{read:true,write:true}, expiration:'never', callbackMethod:'postMessage' });
-      }
-      const token = await client.getToken();
-
-      confirm.addEventListener('click', async () => {
-        if (moveCb.checked) {
-          // Fetch lists & find "done"
-          const lists = await fetch(
-            `https://api.trello.com/1/boards/${boardId}/lists?key=${APP_KEY}&token=${token}`
-          ).then(r => r.json());
-
-          const doneList = lists.find(l => l.name.toLowerCase() === 'done');
-          if (doneList) {
-            await fetch(
-              `https://api.trello.com/1/cards/${cardId}?key=${APP_KEY}&token=${token}`,
-              {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ idList: doneList.id })
-              }
-            );
-          } else {
-            t.notification({ message: 'Couldn’t find a list named "done".', duration: 5 });
-          }
+        // Ensure we have authorization to call Trello's REST API
+        const client = t.getRestApi();
+        if (!(await client.isAuthorized())) {
+          await client.authorize({
+            scope:          { read: true, write: true },
+            expiration:     'never',
+            callbackMethod: 'postMessage'
+          });
         }
+        const token = await client.getToken();
 
-        console.log('Next step:', stepsEl.value);
-        t.closePopup();
-      });
+        confirm.addEventListener('click', async () => {
+          // 1) Move card if checkbox is checked
+          if (moveCb.checked) {
+            // Fetch all lists on the board
+            const lists = await fetch(
+              `https://api.trello.com/1/boards/${boardId}/lists?key=${APP_KEY}&token=${token}`
+            ).then(res => res.json());
 
-      cancel.addEventListener('click', () => t.closePopup());
+            // Find the list named exactly "done" (case-insensitive)
+            const doneList = lists.find(l => l.name.toLowerCase() === 'done');
+            if (doneList) {
+              await fetch(
+                `https://api.trello.com/1/cards/${cardId}?key=${APP_KEY}&token=${token}`,
+                {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ idList: doneList.id })
+                }
+              );
+            } else {
+              t.notification({
+                message: `Couldn’t find a list named "done".`,
+                duration: 5
+              });
+            }
+          }
+
+          // 2) Handle next-steps selection (placeholder logic)
+          console.log('Next step chosen:', stepsEl.value);
+
+          // 3) Close the popup
+          t.closePopup();
+        });
+
+        cancel.addEventListener('click', () => {
+          t.closePopup();
+        });
+
+      } catch (err) {
+        console.error("Error in done-popup:", err);
+        document.body.innerHTML = `<p style="color:red">An error occurred: ${err.message}</p>`;
+      }
     });
   </script>
 </body>

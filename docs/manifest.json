@@ -2,7 +2,7 @@
   "id": "verb-starter-checker",
   "name": "Verb-Starter Checker",
   "description": "Suggest rename or Done workflow via card buttons",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "icons": { "48": "icon-48.png" },
   "capabilities": {
     "card-badges":  { "callback": "cardBadges" },
