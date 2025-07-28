@@ -1,10 +1,12 @@
 {
   "id": "verb-starter-checker",
   "name": "Verb-Starter Checker",
-  "description": "Auto-prompt when card opens without a verb",
+  "description": "Warn on missing verb + Done workflow",
   "version": "0.0.10",
   "icons": { "48": "icon-48.png" },
   "capabilities": {
-    "card-back-section": { "callback": "cardBackSection" }
+    "card-badges":        { "callback": "cardBadges" },
+    "card-back-section":  { "callback": "cardBackSection" },
+    "card-buttons":       { "callback": "cardButtons" }
   }
 }

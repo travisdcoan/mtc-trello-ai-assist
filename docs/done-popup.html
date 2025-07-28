@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: sans-serif; padding: 12px; }
+    label { display: flex; align-items: center; margin-bottom: 12px; }
+    label input { margin-right: 8px; }
+    select, button { width: 100%; margin-top: 8px; padding: 8px; }
+    #cancel-btn { background: none; border: none; color: #555; text-decoration: underline; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <h3>Done Workflow</h3>
+  <label>
+    <input type="checkbox" id="move-checkbox"/>
+    Move card to DONE list
+  </label>
+
+  <label>
+    Next steps:
+    <select id="next-steps">
+      <option>suggestion one</option>
+      <option>suggestion two</option>
+    </select>
+  </label>
+
+  <button id="confirm-btn">Confirm</button>
+  <button id="cancel-btn">Cancel</button>
+
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script>
+    const APP_KEY = "2d28f67731b868888a2fc22bdd3295af";
+    const t = window.TrelloPowerUp.iframe({
+      appKey:  APP_KEY,
+      appName: "Verb-Starter Checker",
+      appAuthor: "Trav Coan"
+    });
+
+    t.render(async () => {
+      const { cardId, boardId } = t.arg();
+      const moveCb  = document.getElementById('move-checkbox');
+      const stepsEl = document.getElementById('next-steps');
+      const confirm = document.getElementById('confirm-btn');
+      const cancel  = document.getElementById('cancel-btn');
+
+      // authorize once
+      const client = t.getRestApi();
+      if (!(await client.isAuthorized())) {
+        await client.authorize({
+          scope:          { read: true, write: true },
+          expiration:     'never',
+          callbackMethod: 'postMessage'
+        });
+      }
+      const token = await client.getToken();
+
+      confirm.addEventListener('click', async () => {
+        // 1) Move card if checked
+        if (moveCb.checked) {
+          // fetch lists on board
+          const lists = await fetch(
+            `https://api.trello.com/1/boards/${boardId}/lists?key=${APP_KEY}&token=${token}`
+          ).then(r => r.json());
+          // find matching DONE list
+          const doneList = lists.find(l =>
+            /^(DONE|done|Done|Complete)$/.test(l.name)
+          );
+          if (doneList) {
+            await fetch(
+              `https://api.trello.com/1/cards/${cardId}?key=${APP_KEY}&token=${token}`,
+              {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ idList: doneList.id })
+              }
+            );
+          }
+        }
+
+        // 2) Next-steps selection (placeholder)
+        console.log('Next step:', stepsEl.value);
+
+        t.closePopup();
+      });
+
+      cancel.addEventListener('click', () => {
+        t.closePopup();
+      });
+    });
+  </script>
+</body>
+</html>
