@@ -1,12 +1,11 @@
 {
   "id": "verb-starter-checker",
   "name": "Verb-Starter Checker",
-  "description": "Warn on missing verb + Done workflow",
-  "version": "0.0.10",
+  "description": "Suggest rename or Done workflow via card buttons",
+  "version": "0.0.11",
   "icons": { "48": "icon-48.png" },
   "capabilities": {
-    "card-badges":        { "callback": "cardBadges" },
-    "card-back-section":  { "callback": "cardBackSection" },
-    "card-buttons":       { "callback": "cardButtons" }
+    "card-badges":  { "callback": "cardBadges" },
+    "card-buttons": { "callback": "cardButtons" }
   }
 }

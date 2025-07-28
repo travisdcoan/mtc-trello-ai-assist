@@ -31,11 +31,7 @@
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script>
     const APP_KEY = "2d28f67731b868888a2fc22bdd3295af";
-    const t = window.TrelloPowerUp.iframe({
-      appKey:  APP_KEY,
-      appName: "Verb-Starter Checker",
-      appAuthor: "Trav Coan"
-    });
+    const t = window.TrelloPowerUp.iframe({ appKey: APP_KEY, appName: "Verb-Starter Checker", appAuthor: "Trav Coan" });
 
     t.render(async () => {
       const { cardId, boardId } = t.arg();
@@ -44,28 +40,21 @@
       const confirm = document.getElementById('confirm-btn');
       const cancel  = document.getElementById('cancel-btn');
 
-      // authorize once
+      // authorize & get token
       const client = t.getRestApi();
       if (!(await client.isAuthorized())) {
-        await client.authorize({
-          scope:          { read: true, write: true },
-          expiration:     'never',
-          callbackMethod: 'postMessage'
-        });
+        await client.authorize({ scope:{read:true,write:true}, expiration:'never', callbackMethod:'postMessage' });
       }
       const token = await client.getToken();
 
       confirm.addEventListener('click', async () => {
-        // 1) Move card if checked
         if (moveCb.checked) {
-          // fetch lists on board
+          // Fetch lists & find "done"
           const lists = await fetch(
             `https://api.trello.com/1/boards/${boardId}/lists?key=${APP_KEY}&token=${token}`
           ).then(r => r.json());
-          // find matching DONE list
-          const doneList = lists.find(l =>
-            /^(DONE|done|Done|Complete)$/.test(l.name)
-          );
+
+          const doneList = lists.find(l => l.name.toLowerCase() === 'done');
           if (doneList) {
             await fetch(
               `https://api.trello.com/1/cards/${cardId}?key=${APP_KEY}&token=${token}`,
@@ -75,18 +64,16 @@
                 body: JSON.stringify({ idList: doneList.id })
               }
             );
+          } else {
+            t.notification({ message: 'Couldn’t find a list named "done".', duration: 5 });
           }
         }
 
-        // 2) Next-steps selection (placeholder)
         console.log('Next step:', stepsEl.value);
-
         t.closePopup();
       });
 
-      cancel.addEventListener('click', () => {
-        t.closePopup();
-      });
+      cancel.addEventListener('click', () => t.closePopup());
     });
   </script>
 </body>
