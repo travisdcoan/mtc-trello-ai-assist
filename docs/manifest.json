@@ -2,7 +2,7 @@
   "id": "verb-starter-checker",
   "name": "Verb-Starter Checker",
   "description": "Auto-prompt when card opens without a verb",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "icons": { "48": "icon-48.png" },
   "capabilities": {
     "card-back-section": { "callback": "cardBackSection" }
