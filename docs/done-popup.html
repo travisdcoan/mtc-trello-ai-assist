@@ -69,7 +69,8 @@
     t.render(async () => {
       try {
         // Retrieve passed-in arguments
-        const { cardId, boardId } = t.arg();
+        const cardId  = t.arg('cardId');
+        const boardId = t.arg('boardId');
         const moveCb  = document.getElementById('move-checkbox');
         const stepsEl = document.getElementById('next-steps');
         const confirm = document.getElementById('confirm-btn');

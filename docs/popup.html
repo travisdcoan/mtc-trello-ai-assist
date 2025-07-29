@@ -9,7 +9,7 @@
       display: block; margin: 6px 0; padding: 6px 12px;
       font-size: 14px; cursor: pointer;
       border: 1px solid #888; border-radius: 4px;
-      background: #3a294f; text-align: left;
+      background: #f4f4f4; text-align: left;
     }
     #cancel-btn {
       margin-top: 10px; background: none; border: none;
@@ -26,21 +26,23 @@
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script>
     const APP_KEY = "2d28f67731b868888a2fc22bdd3295af";
-    // **Pass appKey & appName here!**
+    // Pass your key/app info here so getRestApi() works
     const t = window.TrelloPowerUp.iframe({
       appKey:    APP_KEY,
-      appName:   "Verb-Starter Checker",
+      appName:   "Verb‑Starter Checker",
       appAuthor: "Trav Coan"
     });
 
     t.render(async () => {
       try {
-        const cardId   = t.arg('id');
+        // Pull each arg by name
+        const cardId   = t.arg('cardId');
         const cardName = t.arg('name');
         if (!cardId || !cardName) {
-          throw new Error("Missing card id or name");
+          throw new Error("Missing cardId or name");
         }
 
+        // Show the prompt
         document.getElementById('message').textContent =
           `Would you like to title it “Fix ${cardName}”?`;
 
@@ -55,13 +57,13 @@
         }
         const token = await client.getToken();
 
-        // Build buttons
+        // Build suggestion buttons
         const verbs = ["Add","Assign","Close","Create","Fix","Review","Update","Write"];
         const container = document.getElementById('suggestions');
         container.innerHTML = "";
-        verbs.forEach(verb => {
+        for (let verb of verbs) {
           const newName = `${verb} ${cardName}`;
-          const btn     = document.createElement('button');
+          const btn = document.createElement('button');
           btn.textContent = newName;
           btn.addEventListener('click', async () => {
             await fetch(
@@ -75,16 +77,16 @@
             t.closePopup();
           });
           container.appendChild(btn);
-        });
+        }
 
-        // Cancel
+        // Cancel just closes
         document.getElementById('cancel-btn')
-          .addEventListener('click', () => t.closePopup());
+                .addEventListener('click', () => t.closePopup());
 
       } catch (err) {
         console.error("[Popup] render error:", err);
-        document.body.innerHTML = 
-          `<p style='color:red'>Error loading suggestions:<br>${err.message}</p>`;
+        document.body.innerHTML =
+          `<p style="color:red">An error occurred: ${err.message}</p>`;
       }
     });
   </script>
