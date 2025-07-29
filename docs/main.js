@@ -5,54 +5,54 @@ const verbSet = new Set(verbs.map(v => v.toLowerCase()));
 
 window.TrelloPowerUp.initialize(
   {
-    // 1) Front‑of‑card badge in list view (optional)
-    "card-badges": async t => {
+    // 1. Front-of-card badge in list view
+    "card-badges": async function(t) {
       const { name } = await t.card("name");
-      const first = (name||"").trim().split(/\s+/)[0].toLowerCase();
+      const first = (name || "")
+        .trim()
+        .split(/\s+/)[0]
+        .toLowerCase();
       if (!verbSet.has(first)) {
+        const msg = `It looks like your card “${name}” isn’t starting with a verb.`;
         return [{
-          text:  `Card “${name}” doesn’t start with a verb`,
+          text:  msg,
           color: "red",
-          refresh: 60
+          refresh: 30
         }];
       }
       return [];
     },
 
-    // 2) Two buttons on the back of each card
-    "card-buttons": async t => {
-      const { id: cardId, name } = await t.card("id","name");
-      const { id: boardId }      = await t.board("id");
-
-      return [
-        {
-          icon: { url: 'https://trello.com/favicon.ico', size: 16 },
-          text: 'Suggest Rename',
-          callback: () =>
-            t.popup({
-              title: "Rename Suggestions",
-              url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html",
-              args:  { cardId, name },
-              height: 260
-            })
-        },
-        {
-          icon: { url: 'https://trello.com/favicon.ico', size: 16 },
-          text: 'Done',
-          callback: () =>
-            t.popup({
-              title: "Done Options",
+    // 2. Detail badge on the back of the card (clickable → popup)
+    "card-detail-badges": async function(t) {
+      const { id, name } = await t.card("id", "name");
+      const first = (name || "")
+        .trim()
+        .split(/\s+/)[0]
+        .toLowerCase();
+      if (!verbSet.has(first)) {
+        const msg = `It looks like your card “${name}” isn’t starting with a verb.`;
+        return [{
+          title: "Missing Verb",
+          text:  msg,
+          color: "red",
+          callback: async function(t) {
+            return t.popup({
+              title: "Rename Suggestion",
               url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/done-popup.html",
-              args:  { cardId, boardId },
-              height: 300
-            })
-        }
-      ];
+              args:  { id, name },
+              height: 240
+            });
+          }
+        }];
+      }
+      return [];
     }
   },
   {
+    // ← This is the second argument to initialize()
     appKey:    "2d28f67731b868888a2fc22bdd3295af",
     appName:   "Verb-Starter Checker",
-    appAuthor: "Trav Coan"
+    appAuthor: "MTC"
   }
 );
