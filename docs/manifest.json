@@ -1,11 +1,11 @@
 {
   "id": "verb-starter-checker",
-  "name": "Verb-Starter Checker",
-  "description": "Suggest rename or Done workflow via card buttons",
-  "version": "0.0.12",
-  "icons": { "48": "icon-48.png" },
+  "name": "Verb‑Starter Checker",
+  "description": "Rename suggestions + Done workflow via badges",
+  "version": "0.0.13",
+  "icons": { "48": "icon‑48.png" },
   "capabilities": {
-    "card-badges":  { "callback": "cardBadges" },
-    "card-buttons": { "callback": "cardButtons" }
+    "card-badges":        { "callback": "cardBadges" },
+    "card-detail-badges": { "callback": "cardDetailBadges" }
   }
 }

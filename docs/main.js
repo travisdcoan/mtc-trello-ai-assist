@@ -5,54 +5,62 @@ const verbSet = new Set(verbs.map(v => v.toLowerCase()));
 
 window.TrelloPowerUp.initialize(
   {
-    // 1. Front-of-card badge in list view
-    "card-badges": async function(t) {
+    // (Optional) Front‑of‑card badge in list view
+    "card-badges": async t => {
       const { name } = await t.card("name");
-      const first = (name || "")
-        .trim()
-        .split(/\s+/)[0]
-        .toLowerCase();
+      const first = (name||"").trim().split(/\s+/)[0].toLowerCase();
       if (!verbSet.has(first)) {
-        const msg = `It looks like your card “${name}” isn’t starting with a verb.`;
         return [{
-          text:  msg,
+          text:  `Card “${name}” doesn’t start with a verb`,
           color: "red",
-          refresh: 30
+          refresh: 60
         }];
       }
       return [];
     },
 
-    // 2. Detail badge on the back of the card (clickable → popup)
+    // Two clickable badges under the title on the card back
     "card-detail-badges": async function(t) {
-      const { id, name } = await t.card("id", "name");
-      const first = (name || "")
-        .trim()
-        .split(/\s+/)[0]
-        .toLowerCase();
+      const { id: cardId, name }   = await t.card("id","name");
+      const { id: boardId }        = await t.board("id");
+      const first = (name||"").trim().split(/\s+/)[0].toLowerCase();
+      const badges = [];
+
+      // 1) Rename badge if missing verb
       if (!verbSet.has(first)) {
-        const msg = `It looks like your card “${name}” isn’t starting with a verb.`;
-        return [{
-          title: "Missing Verb",
-          text:  msg,
+        badges.push({
+          title: "Suggest Rename",
+          text:  "Rename",
           color: "red",
-          callback: async function(t) {
-            return t.popup({
-              title: "Rename Suggestion",
-              url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/done-popup.html",
-              args:  { id, name },
-              height: 240
-            });
-          }
-        }];
+          callback: () => t.popup({
+            title: "Rename Suggestions",
+            url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html",
+            args:  { cardId, name },
+            height: 260
+          })
+        });
       }
-      return [];
+
+      // 2) Always-available Done badge
+      badges.push({
+        title: "Done",
+        text:  "Done",
+        color: "green",
+        callback: () => t.popup({
+          title: "Done Options",
+          url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/done-popup.html",
+          args:  { cardId, boardId },
+          height: 300
+        })
+      });
+
+      return badges;
     }
   },
   {
-    // ← This is the second argument to initialize()
+    // REST helper config
     appKey:    "2d28f67731b868888a2fc22bdd3295af",
-    appName:   "Verb-Starter Checker",
-    appAuthor: "MTC"
+    appName:   "Verb‑Starter Checker",
+    appAuthor: "Trav Coan"
   }
 );
