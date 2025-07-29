@@ -5,7 +5,7 @@ const verbSet = new Set(verbs.map(v => v.toLowerCase()));
 
 window.TrelloPowerUp.initialize(
   {
-    // (Optional) Front‑of‑card badge in list view
+    // Front‑of‑card badge in list view (optional)
     "card-badges": async t => {
       const { name } = await t.card("name");
       const first = (name||"").trim().split(/\s+/)[0].toLowerCase();
@@ -21,37 +21,43 @@ window.TrelloPowerUp.initialize(
 
     // Two clickable badges under the title on the card back
     "card-detail-badges": async function(t) {
-      const { id: cardId, name }   = await t.card("id","name");
-      const { id: boardId }        = await t.board("id");
+      const { id: cardId, name } = await t.card("id","name");
+      const { id: boardId }      = await t.board("id");
       const first = (name||"").trim().split(/\s+/)[0].toLowerCase();
       const badges = [];
 
-      // 1) Rename badge if missing verb
+      // Suggest Rename (only if missing verb)
       if (!verbSet.has(first)) {
         badges.push({
           title: "Suggest Rename",
           text:  "Rename",
           color: "red",
-          callback: () => t.popup({
-            title: "Rename Suggestions",
-            url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html",
-            args:  { cardId, name },
-            height: 260
-          })
+          callback: function(t, opts) {
+            return t.popup({
+              title: "Rename Suggestions",
+              url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/popup.html",
+              args:  { cardId, name },
+              height: 260,
+              mouseEvent: opts.event
+            });
+          }
         });
       }
 
-      // 2) Always-available Done badge
+      // Done badge
       badges.push({
         title: "Done",
         text:  "Done",
         color: "green",
-        callback: () => t.popup({
-          title: "Done Options",
-          url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/done-popup.html",
-          args:  { cardId, boardId },
-          height: 300
-        })
+        callback: function(t, opts) {
+          return t.popup({
+            title: "Done Options",
+            url:   "https://travisdcoan.github.io/mtc-trello-ai-assist/done-popup.html",
+            args:  { cardId, boardId },
+            height: 300,
+            mouseEvent: opts.event
+          });
+        }
       });
 
       return badges;
@@ -60,7 +66,7 @@ window.TrelloPowerUp.initialize(
   {
     // REST helper config
     appKey:    "2d28f67731b868888a2fc22bdd3295af",
-    appName:   "Verb‑Starter Checker",
+    appName:   "Verb-Starter Checker",
     appAuthor: "Trav Coan"
   }
 );
