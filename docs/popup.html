@@ -128,10 +128,10 @@
 
 
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script src="./config.js"></script>
   <script>
     // ================== CONFIG ==================
-    const APP_KEY   = "06d29ef207dfaed1d7e3feba0323b561";
-    const AI_URL    = "https://askyeti.co/api/goal/be-current";
+    const { APP_KEY, AI_URL, APP_NAME, APP_AUTHOR } = window.BC;
     const CACHE_KEY = "aiSuggest:v5"; // bump to invalidate old cache
     const FALLBACK  = ["Add","Create","Fix","Update","Review","Write","Organize","Plan"];
 
@@ -197,8 +197,8 @@
     // ================== TRELLO CONTEXT ==================
     const t = window.TrelloPowerUp.iframe({
       appKey:    APP_KEY,
-      appName:   "Verb-Starter Checker",
-      appAuthor: "Trav Coan"
+      appName:   APP_NAME,
+      appAuthor: APP_AUTHOR
     });
 
     // helper: close popup + card

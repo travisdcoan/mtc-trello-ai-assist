@@ -126,14 +126,15 @@
   </div>
 
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script src="./config.js"></script>
   <script>
-    const APP_KEY = "06d29ef207dfaed1d7e3feba0323b561";
+    const { APP_KEY, APP_NAME, APP_AUTHOR } = window.BC;
 
     // Power-Up iframe context
     const t = window.TrelloPowerUp.iframe({
       appKey: APP_KEY,
-      appName: "Verb-Starter Checker",
-      appAuthor: "Trav Coan"
+      appName: APP_NAME,
+      appAuthor: APP_AUTHOR
     });
 
     function el(id){ return document.getElementById(id); }

@@ -167,6 +167,7 @@
   </form>
 
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script src="./config.js"></script>
   <script>
     const DONE_PROMPTS = [
       "Before we close the loop, take a breath—anything still lingering? A tiny next step hiding in the wings?",
@@ -203,12 +204,12 @@
   </script>
 
   <script>
-    const APP_KEY = "06d29ef207dfaed1d7e3feba0323b561";
+    const { APP_KEY, APP_NAME, APP_AUTHOR } = window.BC;
 
     const t = window.TrelloPowerUp.iframe({
       appKey:    APP_KEY,
-      appName:   "BeCurrent",
-      appAuthor: "Trav Coan"
+      appName:   APP_NAME,
+      appAuthor: APP_AUTHOR
     });
 
     // helper: close popup + card

@@ -1,10 +1,8 @@
 // https://becurrent.mixtapeco.com/trello-powerup/js/main.js
 // Offline verb detection for Trello cards (no API calls).
 
-// === BeCurrent Power-Up config ===
-const APP_KEY = "06d29ef207dfaed1d7e3feba0323b561";  // your Trello app key
-const PU_BASE = "https://travisdcoan.github.io/mtc-trello-ai-assist-dev/";
-const V = "2025-11-13";                                 // cache-buster for collaborators
+// === BeCurrent Power-Up config (from /config.js) ===
+const { APP_KEY, PU_BASE, V, APP_NAME, APP_AUTHOR } = (window.BC || window.BECURRENT_CONFIG || {});
 
 // Base-form verbs only (lemmas). Keep all lowercase.
 // Base-form verbs only (lemmas). Keep all lowercase.
@@ -633,7 +631,7 @@ window.TrelloPowerUp.initialize(
   },
   {
     appKey:  APP_KEY, // must match iframe pages' appKey
-    appName: "Verb-Starter Checker (Offline)",
-    appAuthor:"Trav Coan"
+    appName: (APP_NAME ? `${APP_NAME} (Offline)` : "Verb-Starter Checker (Offline)"),
+    appAuthor: (APP_AUTHOR || "Trav Coan")
   }
 );
