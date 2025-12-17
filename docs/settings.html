@@ -1,0 +1,282 @@
+<!-- https://becurrent.mixtapeco.com/trello-powerup/settings.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>BeCurrent • Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --border: #e2e2e2;
+      --text: #1f2328;
+      --muted: #667085;
+      --bg: #ffffff;
+      --card: #ffffff;
+      --accent: #0a66ff;
+      --success: #0a7a0a;
+      --danger: #b00020;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --border: #2a2f35;
+        --text: #f0f2f4;
+        --muted: #a0a7b0;
+        --bg: #0f141a;
+        --card: #151b22;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+    body { font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; padding: 16px; }
+
+    h1 { font-size: 16px; margin: 0 0 12px; }
+    h2 { font-size: 14px; margin: 0 0 8px; }
+    p  { margin: 6px 0; color: var(--muted); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .actions { display: flex; gap: 8px; margin-top: 10px; }
+
+    select, button, input[type="checkbox"] {
+      font: inherit;
+    }
+
+    select {
+      min-width: 240px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      cursor: pointer;
+    }
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    button.ghost {
+      background: transparent;
+    }
+
+    .status { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .status.ok { color: var(--success); }
+    .status.err { color: var(--danger); }
+
+    .list-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 8px 12px;
+      margin-top: 6px;
+    }
+    .list-grid label {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg);
+      cursor: pointer;
+    }
+    .muted { color: var(--muted); }
+    .sep { height: 1px; background: var(--border); margin: 12px 0; }
+  </style>
+</head>
+<body>
+  <h1>BeCurrent • Settings</h1>
+
+  <div class="card" id="done-card">
+    <h2>Done list</h2>
+    <p>Choose which list counts as <strong>Done</strong>. If you leave this blank, we will auto-detect a list named “Done” or “Complete”.</p>
+    <div class="row">
+      <select id="done-select">
+        <option value="">Auto-detect (Done/Complete)</option>
+      </select>
+      <button id="save-done" class="primary">Save</button>
+    </div>
+    <div id="done-status" class="status">Loading…</div>
+  </div>
+
+  <div class="card" id="suppress-card">
+    <h2>Disable suggestions on lists</h2>
+    <p>Suggestions will be hidden on the lists you select below. This is <em>independent</em> of the Done list.</p>
+    <div class="list-grid" id="lists"></div>
+    <div class="actions">
+      <button id="save-disabled" class="primary">Save</button>
+      <button id="select-none"  class="ghost" type="button">Select none</button>
+      <button id="select-all"   class="ghost" type="button">Select all</button>
+    </div>
+    <div id="disabled-status" class="status"></div>
+  </div>
+
+  <div class="row">
+    <button id="close" class="ghost">Close</button>
+  </div>
+
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script>
+    const APP_KEY = "bc773ec2e45cf527b1ad22819fb7c71b";
+
+    // Power-Up iframe context
+    const t = window.TrelloPowerUp.iframe({
+      appKey: APP_KEY,
+      appName: "Verb-Starter Checker",
+      appAuthor: "Trav Coan"
+    });
+
+    function el(id){ return document.getElementById(id); }
+    function escapeHtml(s){ return String(s||"").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+    async function loadBoardListsFromContext() {
+      const lists = await t.lists('all');           // [{ id, name, closed }, ...]
+      return lists.filter(l => !l.closed).map(l => ({ id: l.id, name: l.name }));
+    }
+
+    function buildListGrid(container, lists, disabledSet, currentDoneId) {
+      container.innerHTML = "";
+      for (const list of lists) {
+        // Exclude the Done list from this section for clarity (it's always suppressed separately)
+        if (currentDoneId && list.id === currentDoneId) continue;
+        const label = document.createElement("label");
+        label.innerHTML = `
+          <input type="checkbox" value="${escapeHtml(list.id)}" ${disabledSet.has(list.id) ? "checked" : ""} />
+          <span>${escapeHtml(list.name)}</span>
+        `;
+        container.appendChild(label);
+      }
+    }
+
+    function readDisabledFromUI(container){
+      return Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+    }
+
+    // Resize helper
+    function size() { t.sizeTo(document.body).catch(()=>{}); }
+
+    // Initial render
+    t.render(async () => {
+      try {
+        const lists = await loadBoardListsFromContext();
+
+        // Populate Done dropdown
+        const doneSelect = el('done-select');
+        for (const list of lists) {
+          const opt = document.createElement('option');
+          opt.value = list.id;
+          opt.textContent = list.name;
+          doneSelect.appendChild(opt);
+        }
+
+        // Load saved settings
+        const savedDone        = await t.get('board','shared','doneList');                // { id, name } | null
+        const savedA = await t.get('board','shared','suggestionDisabledLists'); // old
+        const savedB = await t.get('board','shared','suppressLists');           // new
+        const merged = [...new Set([...(savedA||[]), ...(savedB||[])])];
+        const disabledSet = new Set(merged);
+
+        // Reflect Done selection
+        const doneStatus = el('done-status');
+        if (savedDone?.id) {
+          doneSelect.value = savedDone.id;
+          doneStatus.textContent = `Current: ${savedDone.name}`;
+          doneStatus.className = "status";
+        } else {
+          doneSelect.value = "";
+          doneStatus.textContent = `Current: Auto-detect (Done/Complete)`;
+          doneStatus.className = "status";
+        }
+
+        // Build the suppress grid
+        buildListGrid(el('lists'), lists, disabledSet, savedDone?.id || null);
+
+        // Handlers
+        el('save-done').addEventListener('click', async () => {
+          try {
+            // Suppress follow-up modals for 15s so Settings stays open
+            await t.set('member','private','suppressVerbModalUntil', Date.now() + 15000);
+
+            const id = doneSelect.value || null;
+            let payload = null;
+            if (id) {
+              const chosen = lists.find(l => l.id === id);
+              payload = { id, name: chosen ? chosen.name : "" };
+            }
+
+            await t.set('board','shared','doneList', payload);
+
+            // Update UI
+            if (payload) {
+              doneStatus.textContent = `Saved: ${payload.name}`;
+            } else {
+              doneStatus.textContent = `Saved: Auto-detect (Done/Complete)`;
+            }
+            doneStatus.className = "status ok";
+
+            // Rebuild the suppress grid to hide the selected Done list
+            const latestA = await t.get('board','shared','suggestionDisabledLists') || [];
+            const latestB = await t.get('board','shared','suppressLists') || [];
+            const latest  = [...new Set([...latestA, ...latestB])];
+            buildListGrid(el('lists'), lists, new Set(latest), payload?.id || null);
+
+            size();
+          } catch (e) {
+            doneStatus.textContent = `Error: ${e.message || e}`;
+            doneStatus.className = "status err";
+            size();
+          }
+        });
+
+        el('save-disabled').addEventListener('click', async () => {
+          const listsDiv = el('lists');
+          try {
+            // Suppress follow-up modals for 15s so Settings stays open
+            await t.set('member','private','suppressVerbModalUntil', Date.now() + 15000);
+
+            const toSave = readDisabledFromUI(listsDiv);
+            await t.set('board','shared','suggestionDisabledLists', toSave);
+            await t.set('board','shared','suppressLists',            toSave);
+
+            const msg = `Saved: ${toSave.length} list${toSave.length === 1 ? '' : 's'} disabled`;
+            el('disabled-status').textContent = msg;
+            el('disabled-status').className = "status ok";
+            size();
+          } catch (e) {
+            el('disabled-status').textContent = `Error: ${e.message || e}`;
+            el('disabled-status').className = "status err";
+            size();
+          }
+        });
+
+        el('select-none').addEventListener('click', () => {
+          el('lists').querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+          size();
+        });
+        el('select-all').addEventListener('click', () => {
+          el('lists').querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+          size();
+        });
+
+        el('close').addEventListener('click', () => t.closeModal());
+
+        size();
+      } catch (err) {
+        document.body.innerHTML = `<p style="color:#b00020">Settings failed: ${escapeHtml(err?.message || err)}</p>`;
+        console.error('[Settings] error:', err);
+        t.sizeTo(document.body).catch(()=>{});
+      }
+    });
+  </script>
+</body>
+</html>
