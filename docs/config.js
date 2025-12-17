@@ -25,7 +25,7 @@ window.BECURRENT_CONFIG = Object.freeze({
 
   // If AskYeti requires auth, set a bearer token here.
   // NOTE: This file is served to the browser, so anything here is visible to users who can load the Power-Up.
-  AI_BEARER_TOKEN: "1|deQt6ds35tLywbhCvT9iljkPuNnhrDdUdrwkQWh4fbe0b115"
+  AI_BEARER_TOKEN: "3|kb0wepQmdzByi1l5HD3S0SgCl4YFmTuli5dGLnr43bd2ffdb"
 });
 
 // Short alias used throughout the codebase
