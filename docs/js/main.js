@@ -3,8 +3,8 @@
 
 // === BeCurrent Power-Up config ===
 const APP_KEY = "06d29ef207dfaed1d7e3feba0323b561";  // your Trello app key
-const PU_BASE = "https://becurrent.mixtapeco.com/trello-powerup";
-const V = "2025-11-12";                                 // cache-buster for collaborators
+const PU_BASE = "https://travisdcoan.github.io/mtc-trello-ai-assist-dev/";
+const V = "2025-11-13";                                 // cache-buster for collaborators
 
 // Base-form verbs only (lemmas). Keep all lowercase.
 // Base-form verbs only (lemmas). Keep all lowercase.
