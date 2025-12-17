@@ -20,22 +20,22 @@
     var path = window.location.pathname || '';
 
     if (host.indexOf('dev.') === 0) return 'dev';
-    if (path.indexOf('/trello-powerup-dev/') !== -1) return 'dev';
+    if (path.indexOf('/docs/') !== -1) return 'dev';
     return 'prod';
   }
 
   function inferBase(origin, pathname) {
-    if (pathname.indexOf('/trello-powerup-dev/') !== -1) return origin + '/trello-powerup-dev';
+    if (pathname.indexOf('/docs/') !== -1) return origin + '/';
     if (pathname.indexOf('/trello-powerup/') !== -1) return origin + '/trello-powerup';
     return null;
   }
 
   var PROD = {
-    ENV: 'prod',
+    ENV: 'dev',
     V: VERSION,
-    PU_BASE: 'https://becurrent.mixtapeco.com/trello-powerup',
-    APP_KEY: 'bc773ec2e45cf527b1ad22819fb7c71b',
-    APP_KEYS: ['bc773ec2e45cf527b1ad22819fb7c71b'],
+    PU_BASE: 'https://travisdcoan.github.io/mtc-trello-ai-assist-dev/',
+    APP_KEY: '06d29ef207dfaed1d7e3feba0323b561',
+    APP_KEYS: ['06d29ef207dfaed1d7e3feba0323b561'],
     APP_NAME: 'Verb-Starter Checker',
     APP_AUTHOR: 'Trav Coan',
 
@@ -44,7 +44,7 @@
   };
 
   var DEV = {
-    ENV: 'dev',
+    ENV: 'prod',
     V: VERSION,
     PU_BASE: 'https://becurrent.mixtapeco.com/trello-powerup-dev',
     APP_KEY: 'PASTE_DEV_APP_KEY_HERE',
