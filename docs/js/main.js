@@ -2,7 +2,7 @@
 // Offline verb detection for Trello cards (no API calls).
 
 // === BeCurrent Power-Up config ===
-const APP_KEY = "bc773ec2e45cf527b1ad22819fb7c71b";  // your Trello app key
+const APP_KEY = "06d29ef207dfaed1d7e3feba0323b561";  // your Trello app key
 const PU_BASE = "https://becurrent.mixtapeco.com/trello-powerup";
 const V = "2025-11-12";                                 // cache-buster for collaborators
 
