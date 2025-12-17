@@ -1,0 +1,47 @@
+// https://becurrent.mixtapeco.com/trello-powerup/verbs-en.js
+// Base-form verbs only (lemmas). Keep all lowercase.
+export const VERB_LEMMAS = [
+  // core actions
+  "add","adjust","agree","analyze","answer","apply","approve","arrange","ask","assign","attach","attend",
+  "audit","automate","balance","begin","benchmark","bill","book","brainstorm","brief","build","buy",
+  "calculate","call","cancel","capture","care","carry","catalog","categorize","change","check","choose",
+  "clarify","clean","close","collaborate","collect","comment","communicate","compare","complete","compose",
+  "configure","confirm","connect","consider","consolidate","construct","consult","contact","contribute",
+  "convert","coordinate","copy","correct","create","customize","debug","decide","decline","defer","define",
+  "deliver","demo","deploy","design","detail","develop","diagnose","discuss","dispatch","document","donate",
+  "draft","edit","email","enable","engineer","enhance","estimate","evaluate","explain","explore","export",
+  "file","fill","finalize","find","fix","follow","forecast","form","format","gather","generate","get","give",
+  "graph","handle","help","highlight","hold","identify","illustrate","implement","improve","increase",
+  "index","inform","ingest","inspect","install","integrate","interview","investigate","invite","invoice",
+  "join","launch","learn","list","locate","log","make","manage","map","measure","migrate","monitor","name",
+  "note","notify","observe","optimize","order","organize","outline","own","package","pair","pay","perform",
+  "photograph","plan","post","prepare","present","prioritize","probe","procure","produce","profile","program",
+  "proofread","propose","prototype","provide","publish","purchase","push","qualify","query","queue","read",
+  "record","refactor","refine","register","rehearse","reinstall","release","remind","remove","rename",
+  "repair","replace","report","request","research","reserve","resolve","respond","restart","restore",
+  "review","revise","route","run","save","schedule","scope","screen","search","secure","select","send",
+  "set","share","ship","show","sign","simulate","sketch","solve","sort","spec","split","stage","start",
+  "submit","support","survey","sync","tag","test","track","train","transfer","translate","triage","trigger",
+  "update","upgrade","upload","verify","vet","watch","wireframe","write",
+
+  // more general verbs
+  "accept","access","achieve","acquire","adapt","address","advise","affect","align","allocate","allow",
+  "anounce","anticipate","arrive","assist","assume","assure","attain","authorize","balance","bypass",
+  "calculate","clarify","collate","combine","compose","compute","conclude","confirm","conform","conserve",
+  "constrain","construct","contain","convey","convince","coordinate","correlate","create","cultivate",
+  "customise","decipher","decrease","deduce","define","delegate","deliver","demonstrate","derive","designate",
+  "detect","determine","develop","differentiate","diminish","direct","discard","discover","distribute",
+  "diversify","document","dominate","draft","earn","elaborate","eliminate","email","emphasize","empower",
+  "enable","encourage","endorse","enforce","engage","ensure","establish","execute","expand","experience",
+  "facilitate","file","forecast","formulate","foster","gauge","govern","group","guide","harmonize","heighten",
+  "illustrate","imagine","incentivize","incorporate","increase","incubate","initiate","innovate","inspect",
+  "install","instruct","interact","interpret","introduce","invent","iterate","judge","justify","lead",
+  "leverage","limit","maintain","maximize","mentor","merge","model","motivate","navigate","negotiate","observe",
+  "obtain","organise","oversee","pair","participate","persuade","pick","pilot","pinpoint","pitch","plan","prepare",
+  "prioritise","promote","proof","protect","quantify","question","rationalize","realign","reallocate","rebuild",
+  "reconcile","recruit","reduce","reengineer","reiterate","relate","remediate","renew","reorganize","replay",
+  "replicate","report","represent","research","reshape","resolve","resource","restart","retain","retrofit",
+  "reuse","scale","schedule","screen","simplify","standardize","streamline","structure","study","substitute",
+  "succeed","summarize","support","sustain","synthesize","systematize","tailor","target","test","transform",
+  "transition","translate","tune","validate","visualize","win","work" 
+];

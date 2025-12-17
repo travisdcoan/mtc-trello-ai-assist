@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AI Verb-Starter Checker</title>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script>
+    // Load shared config with the same cache-buster Trello uses for iframe URLs (when present)
+    (function(){
+      try {
+        var v = new URLSearchParams(location.search).get('v');
+        var src = 'js/bc-config.js' + (v ? ('?v=' + encodeURIComponent(v)) : '');
+        document.write('<script src="' + src + '"><\\/script>');
+      } catch (_) {
+        document.write('<script src="js/bc-config.js"><\\/script>');
+      }
+    })();
+  </script>
+  <script src="js/main.js"></script>
+</head>
+<body></body>
+</html>
+
