@@ -21,7 +21,7 @@ window.BECURRENT_CONFIG = Object.freeze({
   V: "2025-11-14",
 
   // External services
-  AI_URL: "https://askyeti.co/api/goal/be-current"
+  AI_URL: "https://askyeti.co/api/goal/9"
 });
 
 // Short alias used throughout the codebase
