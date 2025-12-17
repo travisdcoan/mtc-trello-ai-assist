@@ -18,10 +18,14 @@ window.BECURRENT_CONFIG = Object.freeze({
   PU_BASE: "https://travisdcoan.github.io/mtc-trello-ai-assist-dev/",
 
   // Cache buster used in iframe URLs (bump on releases)
-  V: "2025-11-14",
+  V: "2025-11-12",
 
   // External services
-  AI_URL: "https://askyeti.co/api/goal/9"
+  AI_URL: "https://askyeti.co/api/goal/9",
+
+  // If AskYeti requires auth, set a bearer token here.
+  // NOTE: This file is served to the browser, so anything here is visible to users who can load the Power-Up.
+  AI_BEARER_TOKEN: "1|deQt6ds35tLywbhCvT9iljkPuNnhrDdUdrwkQWh4fbe0b115"
 });
 
 // Short alias used throughout the codebase
