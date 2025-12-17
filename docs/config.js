@@ -21,7 +21,7 @@ window.BECURRENT_CONFIG = Object.freeze({
   V: "2025-11-12",
 
   // External services
-  AI_URL: "https://askyeti.co/api/goal/be-current",
+  AI_URL: "https://askyeti.co/api/goal/9",
 
   // If AskYeti requires auth, set a bearer token here.
   // NOTE: This file is served to the browser, so anything here is visible to users who can load the Power-Up.
